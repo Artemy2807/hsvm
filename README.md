@@ -78,31 +78,31 @@ int main() {
 ```c++
 	std::vector<cv::Ptr<cv::ml::SVM>> SVMDetectors{ 3 };
 	SVMDetectors[0] = cv::Algorithm::load<cv::ml::SVM>("output_1.xml");
-    SVMDetectors[1] = cv::Algorithm::load<cv::ml::SVM>("output_2.xml");
-    SVMDetectors[2] = cv::Algorithm::load<cv::ml::SVM>("output_3.xml");
+    	SVMDetectors[1] = cv::Algorithm::load<cv::ml::SVM>("output_2.xml");
+    	SVMDetectors[2] = cv::Algorithm::load<cv::ml::SVM>("output_3.xml");
 ```
 - "output_1.xml", "output_2.xml", "output_3.xml" - пути до обученных классификаторов.
 
 Перед использованием SVM, необходимо подготовить данные для классификации. Создаём класс HOGDescriptor, для использования HOG дескриптора, после чего указываем размер данных. Выше мы обучали классификатор, тот размер, который вы указывали для обучения, необходимо вписать. Загружаем картинку и изменяем её размер. Далее используем HOG дескриптор, на загруженном изображение. descriptors - вектор, содержащий данные, извлечёнными HOG дескриптором. После чего конвертируем вектор, в формат необходимый для SVM классификатора.
 ```c++
 	cv::HOGDescriptor hog;
-    cv::Size size(64, 64);      // Сюда впишите свой размер данных
+    	cv::Size size(64, 64);      // Сюда впишите свой размер данных
 	hog.winSize = size;  
-    cv::Mat img = cv::imread("img.jpg");        // Укажите путь до вашей картинки
-    cv::resize(img, img, size);
+    	cv::Mat img = cv::imread("img.jpg");        // Укажите путь до вашей картинки
+    	cv::resize(img, img, size);
 	std::vector<float> descriptors;
 	hog.compute(resized, descriptors, cv::Size(8, 8), cv::Size(0, 0));
-    cv::Mat gradientList = cv::Mat(cv::Size(descriptors.size(), 1), CV_32FC1);
+    	cv::Mat gradientList = cv::Mat(cv::Size(descriptors.size(), 1), CV_32FC1);
 	transpose(cv::Mat(descriptors), gradientList);
 ```
 
 Мы подготовили данные для классификации, теперь используем SVM классификатор/ы. В цикле проходимся по загруженным SVM классификаторам. predict - ответ SVM классификатора. Если ответ SVM классификатора ближе к 1, то на изображение класс, на который был обучен SVM классификатор, а если ответ классификатора ближе к -1, то это фон. Чтобы определить, какой SVM классификатор сработал, используйте индекс i. i - положение SVM классификатора в векторе.
 ```c++
-    for(size_t i = 0; i < SVMDetectors.size(); i++) {
-        float predict = SVMDetectors[i]->predict(gradientList);
-        // Используйте predict и i для ваших целей
-    }
-    return 0;
+    	for(size_t i = 0; i < SVMDetectors.size(); i++) {
+        	float predict = SVMDetectors[i]->predict(gradientList);
+        	// Используйте predict и i для ваших целей
+    	}
+    	return 0;
 }
 ```
 
